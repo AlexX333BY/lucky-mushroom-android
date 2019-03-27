@@ -1,3 +1,3 @@
 package by.bsuir.luckymushroom.nn.common
 
-data class RecognitionResult(val probability: Float, val mushroomId: Long, val edibility: Edibility)
+data class RecognitionResult(val className: String, val probability: Float)
