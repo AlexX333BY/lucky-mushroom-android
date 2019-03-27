@@ -1,7 +1,7 @@
 package by.bsuir.luckymushroom.nn.common
 
-import android.media.Image;
+import java.io.File
 
 interface MushroomRecognizer {
-    fun recognize(image: Image): Array<RecognitionResult>
+    fun recognize(image: File): Array<RecognitionResult>
 }
