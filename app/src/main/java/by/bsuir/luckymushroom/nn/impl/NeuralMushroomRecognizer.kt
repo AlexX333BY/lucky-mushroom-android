@@ -11,13 +11,18 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class NeuralMushroomRecognizer(modelAndWeights: File) : MushroomRecognizer {
+    protected val HEIGHT = 224 // better to parse from some JSON?
+    protected val WIDTH = 224  // better to parse from some JSON?
+    protected val PIXEL_SIZE = 4
+
     override fun recognize(image: File): Array<RecognitionResult> {
         val labelProb = arrayOf(ByteArray(2), ByteArray(2))
 
-        val bitmap = BitmapFactory.decodeStream(FileInputStream(image))
+        val bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(FileInputStream(image)), WIDTH, HEIGHT, false)
+
         neuralNetwork.run(convertBitmapToByteBuffer(bitmap), labelProb)
         TODO(
-                "1. convert image to ResNet's 224 * 224" +
+                "+1. convert image to ResNet's 224 * 224" +
                 "2. parse output" +
                 "3. properly get labels"
         )
