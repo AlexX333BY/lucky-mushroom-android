@@ -12,21 +12,20 @@ class NeuralMushroomRecognizer(modelAndWeights: File) : MushroomRecognizer {
     protected val HEIGHT = 224 // better to parse from some JSON?
     protected val WIDTH = 224  // better to parse from some JSON?
     protected val PIXEL_SIZE = 3
+    protected val LABELS_COUNT = 2 // class count
 
     override fun recognize(image: File): Array<RecognitionResult> {
-        val labelProb = arrayOf(ByteArray(1), ByteArray(1))
-
+        val probabilities = Array(1) { FloatArray(LABELS_COUNT) }
         val bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(FileInputStream(image)), WIDTH, HEIGHT, false)
 
-        neuralNetwork.run(convertBitmapToByteBuffer(bitmap), labelProb)
+        neuralNetwork.run(convertBitmapToFloatArray(bitmap), probabilities)
         TODO(
-                "+1. convert image to ResNet's 224 * 224" +
-                "2. parse output" +
-                "3. properly get labels"
+                "1. make it not throw exception" +
+                "2. parse output"
         )
     }
 
-    protected fun convertBitmapToByteBuffer(bitmap: Bitmap): Array<Array<FloatArray>> {
+    protected fun convertBitmapToFloatArray(bitmap: Bitmap): Array<Array<FloatArray>> {
         if ((bitmap.width != WIDTH) || (bitmap.height != HEIGHT)) {
             throw IllegalArgumentException(String.format("Bitmap size should be of %dx%d size", WIDTH, HEIGHT))
         }
