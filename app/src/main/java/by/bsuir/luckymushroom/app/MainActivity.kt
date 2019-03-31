@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import by.bsuir.luckymushroom.R
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 val REQUEST_IMAGE_CAPTURE = 1
 
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        button.setOnClickListener {
+        buttonPhoto.setOnClickListener {
             dispatchTakePictureIntent()
         }
 

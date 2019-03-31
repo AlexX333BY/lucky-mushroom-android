@@ -7,4 +7,13 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/activity_main"
-        tools:context=".app.MainActivity"/>
+        tools:context=".app.MainActivity">
+    <Button
+            android:text="@string/take_a_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:id="@+id/buttonPhoto"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="127dp" android:layout_marginBottom="288dp"
+            app:layout_constraintEnd_toEndOf="parent"/>
+</android.support.constraint.ConstraintLayout>
