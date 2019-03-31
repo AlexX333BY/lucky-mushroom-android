@@ -13,7 +13,7 @@ class NeuralMushroomRecognizer(modelAndWeights: File) : MushroomRecognizer {
     protected val WIDTH = 224
     protected val PIXEL_SIZE = 3
 
-    protected val CLASS_COUNT = 1000
+    protected val CLASS_COUNT = 4
     protected val INPUT_NODE_NAME = "input_1"
     protected val OUTPUT_NODE_NAME = "output"
 
