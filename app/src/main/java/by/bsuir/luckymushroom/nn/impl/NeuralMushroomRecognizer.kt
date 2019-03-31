@@ -34,7 +34,7 @@ class NeuralMushroomRecognizer(modelAndWeights: File) : MushroomRecognizer {
             throw IllegalArgumentException(String.format("Bitmap size should be of %dx%d size", WIDTH, HEIGHT))
         }
 
-        val floatedImage = FloatArray(WIDTH * HEIGHT * 3)
+        val floatedImage = FloatArray(WIDTH * HEIGHT * PIXEL_SIZE)
         val pixels = IntArray(WIDTH * HEIGHT)
         bitmap.getPixels(pixels, 0, WIDTH, 0, 0, WIDTH, HEIGHT)
 
