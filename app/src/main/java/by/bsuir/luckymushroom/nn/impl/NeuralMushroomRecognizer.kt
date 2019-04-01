@@ -8,17 +8,24 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.io.FileInputStream
 
-class NeuralMushroomRecognizer(modelAndWeights: File) : MushroomRecognizer {
+class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : MushroomRecognizer {
     protected val HEIGHT = 224
     protected val WIDTH = 224
     protected val PIXEL_SIZE = 3
 
-    protected val CLASS_COUNT = 4
     protected val INPUT_NODE_NAME = "input_1"
     protected val OUTPUT_NODE_NAME = "output"
 
+    protected val classCount: Int
+    protected val neuralNetwork = TensorFlowInferenceInterface(FileInputStream(modelAndWeights))
+    protected val labels = labelsList.readLines()
+
+    init {
+        classCount = labels.size
+    }
+
     override fun recognize(image: File): Array<RecognitionResult> {
-        val probabilities = FloatArray(CLASS_COUNT)
+        val probabilities = FloatArray(classCount)
         val bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(FileInputStream(image)), WIDTH, HEIGHT, false)
 
         neuralNetwork.feed(INPUT_NODE_NAME, convertBitmapToFloatArray(bitmap),
@@ -26,7 +33,7 @@ class NeuralMushroomRecognizer(modelAndWeights: File) : MushroomRecognizer {
         neuralNetwork.run(arrayOf(OUTPUT_NODE_NAME))
         neuralNetwork.fetch(OUTPUT_NODE_NAME, probabilities)
 
-        TODO("Load labels & parse output")
+        return Array(classCount) { classNo -> RecognitionResult(labels[classNo], probabilities[classNo]) }
     }
 
     protected fun convertBitmapToFloatArray(bitmap: Bitmap): FloatArray {
@@ -46,6 +53,4 @@ class NeuralMushroomRecognizer(modelAndWeights: File) : MushroomRecognizer {
 
         return floatedImage
     }
-
-    protected val neuralNetwork: TensorFlowInferenceInterface = TensorFlowInferenceInterface(FileInputStream(modelAndWeights))
 }
