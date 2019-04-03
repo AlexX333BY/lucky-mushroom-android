@@ -7,8 +7,9 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.io.FileInputStream
+import java.io.InputStream
 
-class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : MushroomRecognizer {
+class NeuralMushroomRecognizer(modelAndWeights: InputStream, labelsList: InputStream) : MushroomRecognizer {
     protected val HEIGHT = 224
     protected val WIDTH = 224
     protected val PIXEL_SIZE = 3
@@ -17,8 +18,8 @@ class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : Mushro
     protected val OUTPUT_NODE_NAME = "output"
 
     protected val classCount: Int
-    protected val neuralNetwork = TensorFlowInferenceInterface(FileInputStream(modelAndWeights))
-    protected val labels = labelsList.readLines()
+    protected val neuralNetwork = TensorFlowInferenceInterface(modelAndWeights)
+    protected val labels = BufferedReader(labelsList).lines().collect(Collectors.toList())
 
     init {
         classCount = labels.size
