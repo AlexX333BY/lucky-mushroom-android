@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Exception
 
 
 class RecognitionResultActivity : AppCompatActivity() {
@@ -36,16 +37,23 @@ class RecognitionResultActivity : AppCompatActivity() {
         labelsFile.deleteOnExit()
 
         FileUtils.copyInputStreamToFile(assets.open("labels.txt"), labelsFile)
+        val recognizeResult =
 
-        var recognizer: MushroomRecognizer? = try {
-            NeuralMushroomRecognizer(modelFile, labelsFile)
-        } catch (ex: Error) {
-            null
-        }
+            try {
+                var recognizer: MushroomRecognizer?
+                recognizer = try {
+                    NeuralMushroomRecognizer(modelFile, labelsFile)
+                } catch (ex: Error) {
+                    null
+                }
 
-        val recognizeResult = recognizer?.recognize(File(imageFileUri.path))
-
-        val recognizeResultText =
+                recognizer?.recognize(File(imageFileUri.path))
+            } catch (ex: Error) {
+                null
+            } catch (ex: Exception) {
+                null
+            }
+                val recognizeResultText =
             recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }?.className
 
         val toast = Toast.makeText(
