@@ -8,10 +8,15 @@
         tools:context=".app.RecognitionResultActivity">
 
     <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" tools:srcCompat="@tools:sample/avatars"
+            android:layout_width="200dp"
+            android:layout_height="195dp" tools:srcCompat="@tools:sample/avatars"
             android:id="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="244dp" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498" android:contentDescription="@string/todo"/>
+            android:layout_marginTop="168dp" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497" android:contentDescription="@string/todo"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="518dp"
+            tools:layout_editor_absoluteX="176dp" android:id="@+id/textView"/>
 </android.support.constraint.ConstraintLayout>

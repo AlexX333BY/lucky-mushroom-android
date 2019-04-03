@@ -17,8 +17,9 @@ class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : Mushro
     protected val OUTPUT_NODE_NAME = "output"
 
     protected val classCount: Int
-    protected val neuralNetwork = TensorFlowInferenceInterface(FileInputStream(modelAndWeights))
+
     protected val labels = labelsList.readLines()
+    protected val neuralNetwork = TensorFlowInferenceInterface(FileInputStream(modelAndWeights))
 
     init {
         classCount = labels.size
@@ -28,8 +29,10 @@ class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : Mushro
         val probabilities = FloatArray(classCount)
         val bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(FileInputStream(image)), WIDTH, HEIGHT, false)
 
-        neuralNetwork.feed(INPUT_NODE_NAME, convertBitmapToFloatArray(bitmap),
-            1, WIDTH.toLong(), HEIGHT.toLong(), PIXEL_SIZE.toLong())
+        neuralNetwork.feed(
+            INPUT_NODE_NAME, convertBitmapToFloatArray(bitmap),
+            1, WIDTH.toLong(), HEIGHT.toLong(), PIXEL_SIZE.toLong()
+        )
         neuralNetwork.run(arrayOf(OUTPUT_NODE_NAME))
         neuralNetwork.fetch(OUTPUT_NODE_NAME, probabilities)
 

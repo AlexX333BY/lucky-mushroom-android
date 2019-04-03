@@ -2,8 +2,10 @@ package by.bsuir.luckymushroom.app
 
 import android.app.Activity
 import android.content.Intent
+import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -20,7 +22,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
 
     lateinit var currentPhotoPath: String
+    lateinit var photoURI: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,16 +46,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-
             val intent = Intent(this, RecognitionResultActivity::class.java).also {
-                it.putExtra(EXTRA_IMAGE, imageBitmap)
+                it.putExtra(EXTRA_IMAGE, photoURI)
             }
             startActivity(intent)
         }
 
     }
-
 
 
     @Throws(IOException::class)
@@ -75,6 +74,7 @@ class MainActivity : AppCompatActivity() {
     private fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.addFlags(FLAG_GRANT_WRITE_URI_PERMISSION);
             takePictureIntent.resolveActivity(packageManager)?.also {
                 // Create the File where the photo should go
                 val photoFile: File? = try {
@@ -91,14 +91,19 @@ class MainActivity : AppCompatActivity() {
                 }
                 // Continue only if the File was successfully created
                 photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        this,
-                        "by.bsuir.luckymushroom.fileprovider",
-                        it
-                    )
-//                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    photoURI =
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) FileProvider.getUriForFile(
+                            this,
+                            "by.bsuir.luckymushroom.fileprovider",
+                            it
+                        ) else Uri.fromFile(it)
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+
+
                 }
+
+
             }
         }
     }
