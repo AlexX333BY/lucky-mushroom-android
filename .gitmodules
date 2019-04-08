@@ -1,0 +1,3 @@
+[submodule "neural-network"]
+	path = neural-network
+	url = https://github.com/Barbarius/mushroom-recognition.git
