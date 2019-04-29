@@ -24,10 +24,10 @@
                     android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <activity android:name=".app.RecognitionResultActivity">
+        <activity android:name=".app.ui.RecognitionResultActivity">
         </activity>
         <activity
-                android:name=".app.MainActivity"
+                android:name=".app.ui.MainActivity"
                 android:exported="true"
                 android:label="@string/title_activity_main"
                 android:theme="@style/AppTheme.NoActionBar">

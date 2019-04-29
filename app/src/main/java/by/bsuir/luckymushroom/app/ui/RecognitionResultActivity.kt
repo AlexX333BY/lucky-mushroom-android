@@ -1,6 +1,5 @@
-package by.bsuir.luckymushroom.app
+package by.bsuir.luckymushroom.app.ui
 
-import android.graphics.Bitmap
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -11,9 +10,7 @@ import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.nn.common.*
 import by.bsuir.luckymushroom.nn.impl.NeuralMushroomRecognizer
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import java.io.File
-import java.io.FileOutputStream
 import java.lang.Exception
 
 

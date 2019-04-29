@@ -1,9 +1,8 @@
-package by.bsuir.luckymushroom.app
+package by.bsuir.luckymushroom.app.ui
 
 import android.app.Activity
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -98,7 +97,9 @@ class MainActivity : AppCompatActivity() {
                             it
                         ) else Uri.fromFile(it)
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                    startActivityForResult(takePictureIntent,
+                        REQUEST_TAKE_PHOTO
+                    )
 
 
                 }
