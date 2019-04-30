@@ -3,4 +3,9 @@
     <string name="title_activity_main">Lucky Mushroom</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="todo">TODO</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="log_in">Log In</string>
+    <string name="mail">mail</string>
+    <string name="password">password</string>
+    <string name="skip">Skip</string>
 </resources>

@@ -1,14 +1,15 @@
 package by.bsuir.luckymushroom.nn.impl
 
-import by.bsuir.luckymushroom.nn.common.MushroomRecognizer
-import by.bsuir.luckymushroom.nn.common.RecognitionResult
-import java.io.File
-import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import by.bsuir.luckymushroom.nn.common.MushroomRecognizer
+import by.bsuir.luckymushroom.nn.common.RecognitionResult
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface
+import java.io.File
 import java.io.FileInputStream
 
-class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : MushroomRecognizer {
+class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) :
+    MushroomRecognizer {
     protected val HEIGHT = 224
     protected val WIDTH = 224
     protected val PIXEL_SIZE = 3
@@ -19,7 +20,8 @@ class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : Mushro
     protected val classCount: Int
 
     protected val labels = labelsList.readLines()
-    protected val neuralNetwork = TensorFlowInferenceInterface(FileInputStream(modelAndWeights))
+    protected val neuralNetwork =
+        TensorFlowInferenceInterface(FileInputStream(modelAndWeights))
 
     init {
         classCount = labels.size
@@ -27,7 +29,10 @@ class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : Mushro
 
     override fun recognize(image: File): Array<RecognitionResult> {
         val probabilities = FloatArray(classCount)
-        val bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(FileInputStream(image)), WIDTH, HEIGHT, false)
+        val bitmap = Bitmap.createScaledBitmap(
+            BitmapFactory.decodeStream(FileInputStream(image)), WIDTH, HEIGHT,
+            false
+        )
 
         neuralNetwork.feed(
             INPUT_NODE_NAME, convertBitmapToFloatArray(bitmap),
@@ -36,12 +41,20 @@ class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : Mushro
         neuralNetwork.run(arrayOf(OUTPUT_NODE_NAME))
         neuralNetwork.fetch(OUTPUT_NODE_NAME, probabilities)
 
-        return Array(classCount) { classNo -> RecognitionResult(labels[classNo], probabilities[classNo]) }
+        return Array(classCount) { classNo ->
+            RecognitionResult(
+                labels[classNo], probabilities[classNo]
+            )
+        }
     }
 
     protected fun convertBitmapToFloatArray(bitmap: Bitmap): FloatArray {
         if ((bitmap.width != WIDTH) || (bitmap.height != HEIGHT)) {
-            throw IllegalArgumentException(String.format("Bitmap size should be of %dx%d size", WIDTH, HEIGHT))
+            throw IllegalArgumentException(
+                String.format(
+                    "Bitmap size should be of %dx%d size", WIDTH, HEIGHT
+                )
+            )
         }
 
         val floatedImage = FloatArray(WIDTH * HEIGHT * PIXEL_SIZE)
@@ -49,8 +62,10 @@ class NeuralMushroomRecognizer(modelAndWeights: File, labelsList: File) : Mushro
         bitmap.getPixels(pixels, 0, WIDTH, 0, 0, WIDTH, HEIGHT)
 
         for ((index, pixel) in pixels.withIndex()) {
-            floatedImage[PIXEL_SIZE * index] = ((pixel shr 16) and 0xFF).toFloat()
-            floatedImage[PIXEL_SIZE * index + 1] = ((pixel shr 8) and 0xFF).toFloat()
+            floatedImage[PIXEL_SIZE * index] =
+                ((pixel shr 16) and 0xFF).toFloat()
+            floatedImage[PIXEL_SIZE * index + 1] =
+                ((pixel shr 8) and 0xFF).toFloat()
             floatedImage[PIXEL_SIZE * index + 2] = (pixel and 0xFF).toFloat()
         }
 

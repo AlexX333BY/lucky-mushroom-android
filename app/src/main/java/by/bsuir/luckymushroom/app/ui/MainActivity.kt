@@ -12,6 +12,7 @@ import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
+import by.bsuir.luckymushroom.app.App
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -20,14 +21,12 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class MainActivity : AppCompatActivity() {
 
     companion object {
         val REQUEST_TAKE_PHOTO = 1
         val EXTRA_IMAGE = "Image"
     }
-
 
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
@@ -36,6 +35,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        if (App.user != null) {
+            val toast = Toast.makeText(
+                this, "hello ${App.user!!.userCredentials.userMail}",
+                Toast.LENGTH_LONG
+            )
+            toast.show()
+        }
 
         buttonPhoto.setOnClickListener {
             dispatchTakePictureIntent()
@@ -43,22 +49,28 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            val intent = Intent(this, RecognitionResultActivity::class.java).also {
-                it.putExtra(EXTRA_IMAGE, photoURI)
-            }
+            val intent =
+                Intent(this, RecognitionResultActivity::class.java).also {
+                    it.putExtra(EXTRA_IMAGE, photoURI)
+                }
             startActivity(intent)
         }
 
     }
 
-
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val timeStamp: String =
+            SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File =
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
             "JPEG_${timeStamp}_", /* prefix */
             ".jpg", /* suffix */
@@ -67,8 +79,8 @@ class MainActivity : AppCompatActivity() {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
-    }
 
+    }
 
     private fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
@@ -96,14 +108,15 @@ class MainActivity : AppCompatActivity() {
                             "by.bsuir.luckymushroom.fileprovider",
                             it
                         ) else Uri.fromFile(it)
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent,
+                    takePictureIntent.putExtra(
+                        MediaStore.EXTRA_OUTPUT, photoURI
+                    )
+                    startActivityForResult(
+                        takePictureIntent,
                         REQUEST_TAKE_PHOTO
                     )
 
-
                 }
-
 
             }
         }
