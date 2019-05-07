@@ -6,8 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
-import by.bsuir.luckymushroom.app.dto.User
-import by.bsuir.luckymushroom.app.dto.UserCredentials
+import by.bsuir.luckymushroom.app.dto.users.User
+import by.bsuir.luckymushroom.app.dto.users.UserCredentials
 import com.google.common.hash.Hashing
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
@@ -23,13 +23,16 @@ class LoginActivity : AppCompatActivity() {
 
         // TODO: add validatorsz
         buttonLogIn.setOnClickListener {
+
             val passwordHash = Hashing.sha512()
                 .hashString(
                     editTextPassword.text.toString(), StandardCharsets.UTF_8
                 ).toString()
             val self = this
             val user = App.loginService.getUser(
-                UserCredentials(editTextMail.text.toString(), passwordHash)
+                UserCredentials(
+                    editTextMail.text.toString(), passwordHash
+                )
             ).enqueue(object : Callback<User> {
                 override fun onResponse(
                     call: Call<User>?,
@@ -37,6 +40,7 @@ class LoginActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful) {
                         App.user = response.body()
+                        App.cookie = response.headers().get("Set-Cookie") ?: ""
                         runMainActivity()
                     } else {
                         val toast = Toast.makeText(
@@ -63,7 +67,9 @@ class LoginActivity : AppCompatActivity() {
                 ).toString()
             val self = this
             App.signupService.createUser(
-                UserCredentials(editTextMail.text.toString(), passwordHash)
+                UserCredentials(
+                    editTextMail.text.toString(), passwordHash
+                )
             )
                 .enqueue(object : Callback<User> {
                     override fun onResponse(
@@ -72,6 +78,8 @@ class LoginActivity : AppCompatActivity() {
                     ) {
                         if (response.isSuccessful) {
                             App.user = response.body()
+                            App.cookie =
+                                response.headers().get("Set-Cookie") ?: ""
                             runMainActivity()
                         } else {
                             val toast = Toast.makeText(

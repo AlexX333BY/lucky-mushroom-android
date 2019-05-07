@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Lucky Mushroom</string>
     <string name="title_activity_main">Lucky Mushroom</string>
+    <string name="title_activity_login">Lucky Mushroom</string>
+    <string name="title_activity_recognition_result">Lucky Mushroom</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="todo">TODO</string>
     <string name="sign_up">Sign Up</string>
