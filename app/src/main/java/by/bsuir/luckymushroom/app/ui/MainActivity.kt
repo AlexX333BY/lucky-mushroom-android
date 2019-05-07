@@ -8,8 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.support.design.widget.NavigationView
 import android.support.v4.content.FileProvider
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
@@ -21,7 +24,8 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         val REQUEST_TAKE_PHOTO = 1
@@ -47,6 +51,13 @@ class MainActivity : AppCompatActivity() {
             dispatchTakePictureIntent()
         }
 
+    }
+
+    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
+        val toast = Toast.makeText(this, p0.title.toString(), Toast.LENGTH_LONG)
+        toast.show()
+//        findViewById<DrawerLayout>(R.id.navigationView).also { it.closeDrawer(Gravi) }
+        return true
     }
 
     override fun onActivityResult(
