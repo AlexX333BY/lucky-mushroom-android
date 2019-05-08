@@ -45,6 +45,12 @@ class RecognitionFragment : Fragment() {
                     }
 
                 }
+
+                findViewById<Button>(R.id.buttonGallery).apply {
+                    setOnClickListener {
+                        onClickListener.pickUpFromGallery()
+                    }
+                }
             }
     }
 

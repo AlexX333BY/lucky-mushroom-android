@@ -113,6 +113,10 @@ class MainActivity : AppCompatActivity(),
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
 
             mReturningWithResult = true
+        } else if (requestCode == REQUEST_GET_IMAGE && resultCode == Activity.RESULT_OK) {
+            data?.let { photoURI = it.data as Uri }
+            mReturningWithResult = true
+
         }
 
     }
