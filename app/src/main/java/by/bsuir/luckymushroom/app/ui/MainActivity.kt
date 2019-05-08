@@ -19,7 +19,10 @@ import android.view.MenuItem
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
+import by.bsuir.luckymushroom.nn.common.MushroomRecognizer
+import by.bsuir.luckymushroom.nn.impl.NeuralMushroomRecognizer
 import kotlinx.android.synthetic.main.activity_main.*
+import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -31,13 +34,17 @@ class MainActivity : AppCompatActivity(),
 
     companion object {
         val REQUEST_TAKE_PHOTO = 1
+        val REQUEST_GET_IMAGE = 2
         val EXTRA_IMAGE = "Image"
+        val EXTRA_TEXT = "Text"
     }
 
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
     lateinit var recognitionFragment: RecognitionFragment
     lateinit var infoFragment: InfoFragment
+    lateinit var recognitionResultFragment: RecognitionResultFragment
+    var mReturningWithResult: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +59,7 @@ class MainActivity : AppCompatActivity(),
 
         recognitionFragment = RecognitionFragment()
         infoFragment = InfoFragment()
+        recognitionResultFragment = RecognitionResultFragment()
 
 //        if (savedInstanceState == null) {
         supportFragmentManager.beginTransaction()
@@ -103,13 +111,18 @@ class MainActivity : AppCompatActivity(),
         data: Intent?
     ) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            val intent =
-                Intent(this, RecognitionResultActivity::class.java).also {
-                    it.putExtra(EXTRA_IMAGE, photoURI)
-                }
-            startActivity(intent)
+
+            mReturningWithResult = true
         }
 
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        if (mReturningWithResult)
+            recognize()
+
+        mReturningWithResult = false
     }
 
     @Throws(IOException::class)
@@ -153,8 +166,66 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    private fun recognize() {
+
+        val modelFile = File.createTempFile("model_with_weights", ".tmp")
+        modelFile.deleteOnExit()
+
+        FileUtils.copyInputStreamToFile(
+            assets.open("model_with_weights.pb"), modelFile
+        )
+
+        val labelsFile = File.createTempFile("labels", ".tmp")
+        labelsFile.deleteOnExit()
+
+        FileUtils.copyInputStreamToFile(assets.open("labels.txt"), labelsFile)
+
+        val recognizeResult =
+
+            try {
+                var recognizer: MushroomRecognizer?
+                recognizer = try {
+                    NeuralMushroomRecognizer(modelFile, labelsFile)
+                } catch (ex: Error) {
+                    null
+                }
+
+                recognizer?.recognize(File(photoURI.path))
+            } catch (ex: Error) {
+                null
+            } catch (ex: Exception) {
+                null
+            }
+
+        val recognizeResultText =
+            recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }
+                ?.className ?: "not recognized"
+
+        Bundle().also {
+            it.putParcelable(EXTRA_IMAGE, photoURI)
+            it.putString(EXTRA_TEXT, recognizeResultText)
+
+            recognitionResultFragment.arguments = it
+
+        }
+
+
+        supportFragmentManager.beginTransaction()
+            .replace(
+                R.id.fragment_content, recognitionResultFragment
+            ).addToBackStack(null).commit()
+
+    }
+
     override fun pickUpFromGallery() {
-        Toast.makeText(this, "pickUpFromGallery", Toast.LENGTH_LONG).show()
+        Intent(Intent.ACTION_GET_CONTENT).also { getPictureIntent ->
+            getPictureIntent.addCategory(Intent.CATEGORY_OPENABLE)
+            getPictureIntent.setType("image/*")
+            startActivityForResult(
+                Intent.createChooser(getPictureIntent, "Select Picture"),
+                REQUEST_GET_IMAGE
+            )
+        }
     }
 
     override fun dispatchTakePictureIntent() {
@@ -182,15 +253,16 @@ class MainActivity : AppCompatActivity(),
                             this,
                             "by.bsuir.luckymushroom.fileprovider",
                             it
-                        ) else Uri.fromFile(it)
+                        )
+                        else Uri.fromFile(it)
                     takePictureIntent.putExtra(
-                        MediaStore.EXTRA_OUTPUT, photoURI
+                        MediaStore.EXTRA_OUTPUT,
+                        photoURI
                     )
                     startActivityForResult(
                         takePictureIntent,
                         REQUEST_TAKE_PHOTO
                     )
-
                 }
 
             }
