@@ -20,7 +20,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets { main { assets.srcDirs = ['src/main/assets', '../neural-network/export'] } }
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets', '../neural-network/export']
+        }
+    }
 }
 
 dependencies {

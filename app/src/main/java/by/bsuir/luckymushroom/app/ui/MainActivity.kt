@@ -10,13 +10,16 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.support.design.widget.NavigationView
 import android.support.v4.content.FileProvider
+import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.widget.Toast
+
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
@@ -39,6 +42,23 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        findViewById<DrawerLayout>(R.id.drawerLayoutMain).also {
+            val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+            val toggle = ActionBarDrawerToggle(
+                this, it, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+            )
+            it.addDrawerListener(toggle)
+            toggle.syncState()
+        }
+        findViewById<NavigationView>(
+            R.id.navigationView
+        ).also { it.setNavigationItemSelectedListener(this) }
+
+
+
         if (App.user != null) {
             val toast = Toast.makeText(
                 this, "hello ${App.user!!.userCredentials.userMail}",
@@ -53,10 +73,15 @@ class MainActivity : AppCompatActivity(),
 
     }
 
-    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        val toast = Toast.makeText(this, p0.title.toString(), Toast.LENGTH_LONG)
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val toast =
+            Toast.makeText(this, item.title.toString(), Toast.LENGTH_LONG)
         toast.show()
-//        findViewById<DrawerLayout>(R.id.navigationView).also { it.closeDrawer(Gravi) }
+        findViewById<DrawerLayout>(R.id.drawerLayoutMain).also {
+            it.closeDrawer(
+                GravityCompat.START
+            )
+        }
         return true
     }
 
