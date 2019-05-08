@@ -26,7 +26,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
-    NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener,
+    RecognitionFragment.OnClickListener {
 
     companion object {
         val REQUEST_TAKE_PHOTO = 1
@@ -67,9 +68,9 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val toast =
-            Toast.makeText(this, item.title.toString(), Toast.LENGTH_LONG)
-        toast.show()
+        // TODO: debug
+        Toast.makeText(this, item.title.toString(), Toast.LENGTH_LONG)
+            .show()
 
         when (item.itemId) {
             R.id.nav_info -> {
@@ -88,9 +89,8 @@ class MainActivity : AppCompatActivity(),
         }
 
 
-
-        findViewById<DrawerLayout>(R.id.drawerLayoutMain).also {
-            it.closeDrawer(
+        findViewById<DrawerLayout>(R.id.drawerLayoutMain).apply {
+            closeDrawer(
                 GravityCompat.START
             )
         }
@@ -153,7 +153,11 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun dispatchTakePictureIntent() {
+    override fun pickUpFromGallery() {
+        Toast.makeText(this, "pickUpFromGallery", Toast.LENGTH_LONG).show()
+    }
+
+    override fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
             takePictureIntent.addFlags(FLAG_GRANT_WRITE_URI_PERMISSION);

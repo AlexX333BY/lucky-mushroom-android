@@ -8,7 +8,7 @@
         tools:context=".app.ui.MainActivity"
         android:fitsSystemWindows="true"
         android:id="@+id/drawerLayoutMain"
-        tools:openDrawer="start"
+
 >
     <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
@@ -17,7 +17,8 @@
         <android.support.design.widget.AppBarLayout
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:theme="@style/AppTheme.AppBarOverlay" android:id="@+id/appBarLayout3"
+                android:theme="@style/AppTheme.AppBarOverlay"
+                android:id="@+id/appBarLayout3"
         >
 
             <android.support.v7.widget.Toolbar
@@ -29,10 +30,10 @@
 
         </android.support.design.widget.AppBarLayout>
     </android.support.design.widget.CoordinatorLayout>
+
     <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_height="match_parent"
             tools:context=".app.ui.MainActivity"
             android:id="@+id/fragment_content"/>
     <android.support.design.widget.NavigationView
@@ -42,6 +43,7 @@
             android:id="@+id/navigationView"
             android:layout_gravity="start"
 
-            app:headerLayout="@layout/navigation_header"/>
+            app:headerLayout="@layout/navigation_header">
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
