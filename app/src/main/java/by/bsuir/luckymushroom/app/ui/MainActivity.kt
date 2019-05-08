@@ -17,11 +17,9 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.widget.Toast
-
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -37,39 +35,34 @@ class MainActivity : AppCompatActivity(),
 
     lateinit var currentPhotoPath: String
     lateinit var photoURI: Uri
+    lateinit var recognitionFragment: RecognitionFragment
+    lateinit var infoFragment: InfoFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        findViewById<DrawerLayout>(R.id.drawerLayoutMain).also {
-            val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        initToggle()
 
-            val toggle = ActionBarDrawerToggle(
-                this, it, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close
-            )
-            it.addDrawerListener(toggle)
-            toggle.syncState()
-        }
         findViewById<NavigationView>(
             R.id.navigationView
         ).also { it.setNavigationItemSelectedListener(this) }
 
+        recognitionFragment = RecognitionFragment()
+        infoFragment = InfoFragment()
 
+//        if (savedInstanceState == null) {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_content, recognitionFragment)
+            .commit()
+//        }
 
-        if (App.user != null) {
-            val toast = Toast.makeText(
-                this, "hello ${App.user!!.userCredentials.userMail}",
-                Toast.LENGTH_LONG
-            )
-            toast.show()
-        }
+        initUser()
 
-        buttonPhoto.setOnClickListener {
-            dispatchTakePictureIntent()
-        }
+//        buttonPhoto.setOnClickListener {
+//            dispatchTakePictureIntent()
+//        }
 
     }
 
@@ -77,6 +70,25 @@ class MainActivity : AppCompatActivity(),
         val toast =
             Toast.makeText(this, item.title.toString(), Toast.LENGTH_LONG)
         toast.show()
+
+        when (item.itemId) {
+            R.id.nav_info -> {
+
+                supportFragmentManager.beginTransaction().replace(
+                    R.id.fragment_content, infoFragment
+                ).addToBackStack(null).commit()
+            }
+
+            R.id.nav_recognition -> {
+
+                supportFragmentManager.beginTransaction().replace(
+                    R.id.fragment_content, recognitionFragment
+                ).addToBackStack(null).commit()
+            }
+        }
+
+
+
         findViewById<DrawerLayout>(R.id.drawerLayoutMain).also {
             it.closeDrawer(
                 GravityCompat.START
@@ -116,6 +128,29 @@ class MainActivity : AppCompatActivity(),
             currentPhotoPath = absolutePath
         }
 
+    }
+
+    private fun initToggle() {
+        findViewById<DrawerLayout>(R.id.drawerLayoutMain).also {
+            val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+            val toggle = ActionBarDrawerToggle(
+                this, it, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+            )
+            it.addDrawerListener(toggle)
+            toggle.syncState()
+        }
+    }
+
+    private fun initUser() {
+        if (App.user != null) {
+            val toast = Toast.makeText(
+                this, "hello ${App.user!!.userCredentials.userMail}",
+                Toast.LENGTH_LONG
+            )
+            toast.show()
+        }
     }
 
     private fun dispatchTakePictureIntent() {

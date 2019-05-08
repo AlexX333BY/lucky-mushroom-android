@@ -54,7 +54,7 @@ class RecognitionResultActivity : AppCompatActivity() {
             }
         val recognizeResultText =
             recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }
-                ?.className
+                ?.className ?: "not recognized"
 
         val toast = Toast.makeText(
             this,
