@@ -1,14 +1,17 @@
 package by.bsuir.luckymushroom.app.ui
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.design.widget.NavigationView
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.FileProvider
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var recognitionResultFragment: RecognitionResultFragment
     lateinit var loginFragment: LoginFragment
     var mReturningWithResult: Boolean = false
+    var locationPermission: Boolean = false
 
     override fun runMain() {
         supportFragmentManager.beginTransaction()
@@ -65,6 +69,9 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        ActivityCompat.requestPermissions(
+            this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1
+        )
 
 
         recognitionFragment = RecognitionFragment()
@@ -85,6 +92,21 @@ class MainActivity : AppCompatActivity(),
         initUser()
 
 
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> {
+                locationPermission =
+                    (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+
+            }
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
