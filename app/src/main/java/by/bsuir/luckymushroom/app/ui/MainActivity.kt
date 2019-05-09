@@ -30,7 +30,8 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
-    RecognitionFragment.OnClickListener {
+    RecognitionFragment.OnClickListener,
+    LoginFragment.OnClickListener {
 
     companion object {
         val REQUEST_TAKE_PHOTO = 1
@@ -44,34 +45,45 @@ class MainActivity : AppCompatActivity(),
     lateinit var recognitionFragment: RecognitionFragment
     lateinit var infoFragment: InfoFragment
     lateinit var recognitionResultFragment: RecognitionResultFragment
+    lateinit var loginFragment: LoginFragment
     var mReturningWithResult: Boolean = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+    override fun runMain() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_content, recognitionFragment)
+            .commit()
 
         initToggle()
 
         findViewById<NavigationView>(
             R.id.navigationView
         ).also { it.setNavigationItemSelectedListener(this) }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
+
+
 
         recognitionFragment = RecognitionFragment()
         infoFragment = InfoFragment()
         recognitionResultFragment = RecognitionResultFragment()
+        loginFragment = LoginFragment()
 
 //        if (savedInstanceState == null) {
+
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_content, recognitionFragment)
-            .commit()
+            .add(R.id.fragment_content, loginFragment).commit()
+
+//        supportFragmentManager.beginTransaction()
+//            .add(R.id.fragment_content, recognitionFragment)
+//            .commit()
 //        }
 
         initUser()
 
-//        buttonPhoto.setOnClickListener {
-//            dispatchTakePictureIntent()
-//        }
 
     }
 
