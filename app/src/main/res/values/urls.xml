@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="hostname">http://165.22.88.25:5000</string>
     <string name="users_signup">/api/users/signup</string>
 </resources>

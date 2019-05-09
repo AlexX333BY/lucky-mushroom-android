@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Lucky Mushroom</string>
     <string name="title_activity_main">Lucky Mushroom</string>
+    <string name="title_activity_login">Lucky Mushroom</string>
+    <string name="title_activity_recognition_result">Lucky Mushroom</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="todo">TODO</string>
     <string name="sign_up">Sign Up</string>
@@ -8,4 +10,12 @@
     <string name="mail">mail</string>
     <string name="password">password</string>
     <string name="skip">Skip</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="recognition">Recognition</string>
+    <string name="information">Information</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pick_up_from_gallery">pick up from gallery</string>
 </resources>
