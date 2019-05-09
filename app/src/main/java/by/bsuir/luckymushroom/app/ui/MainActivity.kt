@@ -18,6 +18,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Base64
 import android.view.MenuItem
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
@@ -237,7 +238,7 @@ class MainActivity : AppCompatActivity(),
 
         val recognizeResultText =
             recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }
-                ?.className ?: "not recognized"
+                ?.className ?: "not-recognized"
 
         Bundle().also {
             it.putParcelable(EXTRA_IMAGE, photoURI)
@@ -254,6 +255,8 @@ class MainActivity : AppCompatActivity(),
             ).addToBackStack(null).commit()
 
     }
+
+
 
     override fun pickUpFromGallery() {
         Intent(Intent.ACTION_GET_CONTENT).also { getPictureIntent ->

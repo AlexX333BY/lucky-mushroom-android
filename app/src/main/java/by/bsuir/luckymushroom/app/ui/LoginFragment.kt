@@ -19,9 +19,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.nio.charset.StandardCharsets
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class LoginFragment : Fragment() {
 
     interface OnClickListener {

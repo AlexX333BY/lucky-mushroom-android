@@ -9,11 +9,6 @@ import android.widget.Button
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class RecognitionFragment : Fragment() {
 
     interface OnClickListener {
@@ -33,7 +28,6 @@ class RecognitionFragment : Fragment() {
         )
             .apply {
                 findViewById<Button>(R.id.buttonPhoto).apply {
-
 
                     setOnClickListener {
                         onClickListener.dispatchTakePictureIntent()

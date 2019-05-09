@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class App : Application() {
 
     companion object {
-        //        val BASE_URL = "http://192.168.0.106:58479"
+//        val BASE_URL = "http://192.168.0.106:58479"
         val BASE_URL = "http://165.22.88.25:5000"
 
         lateinit var loginService: LoginService
@@ -25,7 +25,8 @@ class App : Application() {
         lateinit var addRecognitionRequestService: AddRecognitionRequestService
 
         var user: User? = null
-        var cookie: String = ""
+        var cookie: String? = null
+
     }
 
     val retrofit: Retrofit = Retrofit.Builder()
@@ -42,7 +43,8 @@ class App : Application() {
 
         articlesService = retrofit.create(ArticlesService::class.java)
 
-        addRecognitionRequestService = retrofit.create(AddRecognitionRequestService::class.java)
+        addRecognitionRequestService =
+            retrofit.create(AddRecognitionRequestService::class.java)
     }
 
 
