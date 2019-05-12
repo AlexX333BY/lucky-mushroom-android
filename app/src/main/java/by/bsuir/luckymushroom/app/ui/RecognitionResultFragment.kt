@@ -23,6 +23,12 @@ import java.sql.Timestamp
 
 class RecognitionResultFragment : Fragment() {
 
+    val REQ_RESULTS = mapOf(
+        "edible" to "съедобный", "non-edible" to "несъедобный",
+        "partial-edible" to "условно-съедобный", "not-a-mushroom" to "не гриб",
+        "not-recognized" to "не распознан"
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,7 +46,7 @@ class RecognitionResultFragment : Fragment() {
                     photoUri
                 )
             }
-            findViewById<TextView>(R.id.textView).text = recognitionResultText
+            findViewById<TextView>(R.id.textView).text = REQ_RESULTS[recognitionResultText]
             val edibleStatus: EdibleStatus? =
                 if (recognitionResultText == "not-recognized") null else EdibleStatus(
                     recognitionResultText

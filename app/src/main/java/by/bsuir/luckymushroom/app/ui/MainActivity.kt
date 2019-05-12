@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity(),
     var mReturningWithResult: Boolean = false
     var mFileFromGallery: Boolean = false
     var locationPermission: Boolean = false
+    val isOldAndroidVersion: Boolean =
+        Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT
 
     override fun runMain() {
         supportFragmentManager.beginTransaction()
@@ -167,11 +169,18 @@ class MainActivity : AppCompatActivity(),
 
     fun getPath(uri: Uri): Uri? {
         val projection: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-        val fileId = DocumentsContract.getDocumentId(uri)
-        val id = fileId.split(":")[1]
-        val selector = MediaStore.Images.Media._ID + "=?"
-        val cursor: Cursor =
-            contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selector, arrayOf(id), null)
+        val cursor: Cursor = if (!isOldAndroidVersion) {
+            val fileId = DocumentsContract.getDocumentId(uri)
+            val id = fileId.split(":")[1]
+            val selector = MediaStore.Images.Media._ID + "=?"
+
+            contentResolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
+                selector, arrayOf(id), null
+            )
+        } else {
+            contentResolver.query(uri, projection, null, null, null)
+        }
         var rez: Uri? = null
         if (cursor.moveToFirst()) {
             val columnIndex: Int =
@@ -265,8 +274,11 @@ class MainActivity : AppCompatActivity(),
                 null
             }
 
+//        val recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }
+
         val recognizeResultText =
             recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }
+                ?.takeIf { it.probability > 0.6 }
                 ?.className ?: "not-recognized"
 
         Bundle().also {
@@ -317,7 +329,7 @@ class MainActivity : AppCompatActivity(),
                 // Continue only if the File was successfully created
                 photoFile?.also {
                     photoURI =
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) FileProvider.getUriForFile(
+                        if (!isOldAndroidVersion) FileProvider.getUriForFile(
                             this,
                             "by.bsuir.luckymushroom.fileprovider",
                             it
