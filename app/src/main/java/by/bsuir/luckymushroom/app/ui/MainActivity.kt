@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -18,7 +19,6 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.Base64
 import android.view.MenuItem
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var recognitionResultFragment: RecognitionResultFragment
     lateinit var loginFragment: LoginFragment
     var mReturningWithResult: Boolean = false
+    var mFileFromGallery: Boolean = false
     var locationPermission: Boolean = false
 
     override fun runMain() {
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity(),
         setSupportActionBar(toolbar)
 
         ActivityCompat.requestPermissions(
-            this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1
+            this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE), 1
         )
 
 
@@ -105,6 +106,7 @@ class MainActivity : AppCompatActivity(),
             1 -> {
                 locationPermission =
                     (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+
 
             }
         }
@@ -149,10 +151,30 @@ class MainActivity : AppCompatActivity(),
 
             mReturningWithResult = true
         } else if (requestCode == REQUEST_GET_IMAGE && resultCode == Activity.RESULT_OK) {
-            data?.let { photoURI = it.data as Uri }
+            data?.let {
+                photoURI = getPath(it.data as Uri)!!
+            }
             mReturningWithResult = true
 
+
         }
+
+    }
+
+    fun getPath(uri: Uri): Uri? {
+        val projection: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor =
+            contentResolver.query(uri, projection, null, null, null)
+        var rez: Uri? = null
+        if (cursor.moveToFirst()) {
+            val columnIndex: Int =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+
+            val filePath: String = cursor.getString(columnIndex)
+            rez = Uri.parse(filePath)
+        }
+        cursor.close()
+        return rez
 
     }
 
@@ -255,8 +277,6 @@ class MainActivity : AppCompatActivity(),
             ).addToBackStack(null).commit()
 
     }
-
-
 
     override fun pickUpFromGallery() {
         Intent(Intent.ACTION_GET_CONTENT).also { getPictureIntent ->

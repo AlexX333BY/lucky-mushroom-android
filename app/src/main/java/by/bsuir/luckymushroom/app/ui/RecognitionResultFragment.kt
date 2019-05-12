@@ -41,16 +41,17 @@ class RecognitionResultFragment : Fragment() {
                 )
             }
             findViewById<TextView>(R.id.textView).text = recognitionResultText
-            val edibleStatus: EdibleStatus =
-                if (recognitionResultText == "not-recognized") EdibleStatus(
-                    "non-edible"
-                ) else EdibleStatus(
+            val edibleStatus: EdibleStatus? =
+                if (recognitionResultText == "not-recognized") null else EdibleStatus(
                     recognitionResultText
                 )
             val recognitionStatus: RecognitionStatus =
                 if (recognitionResultText != "not-recognized") RecognitionStatus(
                     "recognized"
                 ) else RecognitionStatus(recognitionResultText)
+
+
+
             App.cookie?.let { cookie ->
                 photoUri?.let { photoUri ->
                     File(photoUri.path).also {
@@ -67,9 +68,9 @@ class RecognitionResultFragment : Fragment() {
                                     System.currentTimeMillis()
 
                                 ), edibleStatus, recognitionStatus,
-                                arrayOf(
-                                    RequestPhoto("jpg", base64Image)
-                                )
+
+                                RequestPhoto("jpg", base64Image)
+
                             ), cookie
                         )
                             .enqueue(object : Callback<RecognitionRequest> {
@@ -77,7 +78,7 @@ class RecognitionResultFragment : Fragment() {
                                     call: Call<RecognitionRequest>,
                                     t: Throwable
                                 ) {
-
+                                    t.message
                                 }
 
                                 override fun onResponse(

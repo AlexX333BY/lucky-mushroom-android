@@ -7,5 +7,5 @@ data class RecognitionRequest(
     val requestDatetime: Timestamp,
     val edibleStatus: EdibleStatus?,
     val recognitionStatus: RecognitionStatus,
-    val requestPhotos: Array<RequestPhoto>
+    val requestPhoto: RequestPhoto
 )
