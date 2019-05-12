@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
@@ -72,7 +73,10 @@ class MainActivity : AppCompatActivity(),
         setSupportActionBar(toolbar)
 
         ActivityCompat.requestPermissions(
-            this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE), 1
+            this, arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ), 1
         )
 
 
@@ -163,8 +167,11 @@ class MainActivity : AppCompatActivity(),
 
     fun getPath(uri: Uri): Uri? {
         val projection: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
+        val fileId = DocumentsContract.getDocumentId(uri)
+        val id = fileId.split(":")[1]
+        val selector = MediaStore.Images.Media._ID + "=?"
         val cursor: Cursor =
-            contentResolver.query(uri, projection, null, null, null)
+            contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selector, arrayOf(id), null)
         var rez: Uri? = null
         if (cursor.moveToFirst()) {
             val columnIndex: Int =
