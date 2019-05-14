@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(),
     var mFileFromGallery: Boolean = false
     var locationPermission: Boolean = false
     val isOldAndroidVersion: Boolean =
-        Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT
+        Build.VERSION.SDK_INT <= Build.VERSION_CODES.M
 
     override fun runMain() {
         supportFragmentManager.beginTransaction()
