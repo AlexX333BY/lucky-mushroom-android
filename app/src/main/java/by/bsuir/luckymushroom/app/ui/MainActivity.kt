@@ -27,7 +27,6 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
-import by.bsuir.luckymushroom.app.App
 import by.bsuir.luckymushroom.app.viewmodels.AppViewModel
 import by.bsuir.luckymushroom.app.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -64,13 +63,9 @@ class MainActivity : AppCompatActivity(),
             .commit()
 
         drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-        initToggle()
 
         model.launchRecognizerInit(assets)
 
-        findViewById<NavigationView>(
-            R.id.navigationView
-        ).also { it.setNavigationItemSelectedListener(this) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,22 +107,30 @@ class MainActivity : AppCompatActivity(),
         })
 
         userModel.getUser().observe(this, Observer {
+            if (it == null)
+                openLoginFragment()
+            else
+                runMain()
+
             textViewUserName.text =
                 it?.userCredentials?.userMail ?: "Mushroomer"
         })
 
-        drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragment_content, LoginFragment()).commit()
 
         recognitionFragment = RecognitionFragment()
         infoFragment = InfoFragment()
         loginFragment = LoginFragment()
 
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_content, loginFragment).commit()
+        initToggle()
 
-        initUser()
+        findViewById<NavigationView>(
+            R.id.navigationView
+        ).also { it.setNavigationItemSelectedListener(this) }
 
+        openLoginFragment()
     }
 
     override fun onRequestPermissionsResult(
@@ -171,6 +174,11 @@ class MainActivity : AppCompatActivity(),
                     ).addToBackStack(null).commit()
                 }
             }
+            R.id.nav_history -> {
+            }
+            R.id.nav_logout -> {
+                userModel.launchLogOut()
+            }
         }
 
         findViewById<DrawerLayout>(R.id.drawerLayoutMain).apply {
@@ -193,6 +201,12 @@ class MainActivity : AppCompatActivity(),
             model.setIsRecognition(true)
 
         }
+    }
+
+    private fun openLoginFragment() {
+        drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_content, LoginFragment()).commit()
     }
 
     fun getPath(uri: Uri): Uri? {
@@ -250,16 +264,7 @@ class MainActivity : AppCompatActivity(),
 
     }
 
-    private fun initUser() {
-        if (App.user != null) {
-            val toast = Toast.makeText(
-                this, "hello ${App.user!!.userCredentials.userMail}",
-                Toast.LENGTH_LONG
-            )
-            toast.show()
-        }
-    }
-
+    //
     private fun openRecognitionResultFragment(recognizeResultText: String) {
         val recognitionResultFragment = RecognitionResultFragment()
         Bundle().also {

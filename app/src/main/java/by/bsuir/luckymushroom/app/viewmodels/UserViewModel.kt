@@ -40,6 +40,24 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun launchLogOut() {
+        uiScope.launch {
+            logOut()
+        }
+    }
+
+    suspend fun logOut() = withContext(Dispatchers.IO) {
+        try {
+            App.cookie?.let {
+                App.logoutService.logout(it).await()
+                user.postValue(null)
+                App.cookie = ""
+            }
+        } catch (ex: Exception) {
+            ex
+        }
+    }
+
     suspend fun signUp(mail: String, password: String) =
         withContext(Dispatchers.IO) {
             val passwordHash = Hashing.sha512().hashString(
@@ -51,8 +69,7 @@ class UserViewModel : ViewModel() {
                 val response =
                     App.signupService.createUser(
                         UserCredentials(mail, passwordHash)
-                    )
-                        .await()
+                    ).await()
 
                 if (response.isSuccessful) {
                     user.postValue(response.body())
@@ -76,8 +93,7 @@ class UserViewModel : ViewModel() {
                 val response =
                     App.loginService.getUser(
                         UserCredentials(mail, passwordHash)
-                    )
-                        .await()
+                    ).await()
 
                 if (response.isSuccessful) {
                     user.postValue(response.body())

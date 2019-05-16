@@ -38,9 +38,6 @@ class LoginFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_login, container, false)
             .apply {
                 activity?.let {
-                    userModel.getUser().observe(it, Observer { user ->
-                        onClickListener.runMain()
-                    })
                     userModel.getAuthError().observe(it, Observer { authError ->
                         Toast.makeText(
                             it, authError,

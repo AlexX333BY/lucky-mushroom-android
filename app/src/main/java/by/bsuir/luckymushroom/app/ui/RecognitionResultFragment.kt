@@ -65,7 +65,6 @@ class RecognitionResultFragment : Fragment() {
                             Base64.encodeToString(
                                 it.readBytes(), Base64.DEFAULT
                             )
-//                            .also {
                         App.addRecognitionRequestService.addRecognitionRequest(
                             RecognitionRequest(
                                 null,

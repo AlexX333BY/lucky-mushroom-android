@@ -5,7 +5,6 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.res.AssetManager
 import android.net.Uri
-import by.bsuir.luckymushroom.app.dto.users.User
 import by.bsuir.luckymushroom.nn.common.MushroomRecognizer
 import by.bsuir.luckymushroom.nn.common.RecognitionResult
 import by.bsuir.luckymushroom.nn.impl.NeuralMushroomRecognizer
@@ -16,18 +15,14 @@ import java.io.File
 class AppViewModel : ViewModel() {
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
-
     var photoURI: Uri? = null
     var recognizer: MushroomRecognizer? = null
-
     private val isRecognition: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>().also {
             it.value = false
         }
     }
-
     private val recognitionResult = MutableLiveData<RecognitionResult?>()
-
     private val isLoading: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>().also {
             it.value = false
@@ -57,9 +52,11 @@ class AppViewModel : ViewModel() {
 
     fun launchRecognizerInit(assets: AssetManager) {
         uiScope.launch {
-            isLoading.postValue(true)
-            initRecognizer(assets)
-            isLoading.postValue(false)
+            if (recognizer == null) {
+                isLoading.postValue(true)
+                initRecognizer(assets)
+                isLoading.postValue(false)
+            }
         }
     }
 
@@ -74,14 +71,12 @@ class AppViewModel : ViewModel() {
 
     suspend fun initRecognizer(assets: AssetManager) =
         withContext(Dispatchers.Default) {
-
             val modelFile = File.createTempFile("model_with_weights", ".tmp")
             modelFile.deleteOnExit()
 
             FileUtils.copyInputStreamToFile(
                 assets.open("model_with_weights.pb"), modelFile
             )
-
             val labelsFile = File.createTempFile("labels", ".tmp")
             labelsFile.deleteOnExit()
 
