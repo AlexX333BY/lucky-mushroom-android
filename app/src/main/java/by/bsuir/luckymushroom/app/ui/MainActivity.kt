@@ -29,7 +29,9 @@ import android.widget.Toast
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
 import by.bsuir.luckymushroom.app.viewmodels.AppViewModel
+import by.bsuir.luckymushroom.app.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.navigation_header.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -39,7 +41,6 @@ class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
     RecognitionFragment.OnClickListener,
     LoginFragment.OnClickListener {
-
     companion object {
         val REQUEST_TAKE_PHOTO = 1
         val REQUEST_GET_IMAGE = 2
@@ -51,9 +52,8 @@ class MainActivity : AppCompatActivity(),
     lateinit var recognitionFragment: RecognitionFragment
     lateinit var infoFragment: InfoFragment
     lateinit var loginFragment: LoginFragment
-
     lateinit var model: AppViewModel
-
+    lateinit var userModel: UserViewModel
     var locationPermission: Boolean = false
     val isOldAndroidVersion: Boolean =
         Build.VERSION.SDK_INT <= Build.VERSION_CODES.M
@@ -85,9 +85,9 @@ class MainActivity : AppCompatActivity(),
             ), 1
         )
 
-
-
         model = ViewModelProviders.of(this).get(AppViewModel::class.java)
+        userModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
+
         model.getIsLoading().observe(this, Observer {
             it?.let {
                 if (it) {
@@ -97,7 +97,6 @@ class MainActivity : AppCompatActivity(),
                     progressBar.visibility = ProgressBar.INVISIBLE
                     fragment_content.visibility = View.VISIBLE
                 }
-
             }
         })
         model.getIsRecognition().observe(this, Observer {
@@ -112,6 +111,11 @@ class MainActivity : AppCompatActivity(),
             openRecognitionResultFragment(recognizeResultText)
         })
 
+        userModel.getUser().observe(this, Observer {
+            textViewUserName.text =
+                it?.userCredentials?.userMail ?: "Mushroomer"
+        })
+
         drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         recognitionFragment = RecognitionFragment()
@@ -123,7 +127,6 @@ class MainActivity : AppCompatActivity(),
             .add(R.id.fragment_content, loginFragment).commit()
 
         initUser()
-
 
     }
 
@@ -149,7 +152,6 @@ class MainActivity : AppCompatActivity(),
 
         when (item.itemId) {
             R.id.nav_info -> {
-
                 val frag = supportFragmentManager.findFragmentById(
                     R.id.fragment_content
                 )
@@ -159,9 +161,7 @@ class MainActivity : AppCompatActivity(),
                     ).addToBackStack(null).commit()
                 }
             }
-
             R.id.nav_recognition -> {
-
                 val frag = supportFragmentManager.findFragmentById(
                     R.id.fragment_content
                 )
@@ -170,15 +170,11 @@ class MainActivity : AppCompatActivity(),
                         R.id.fragment_content, recognitionFragment
                     ).addToBackStack(null).commit()
                 }
-
             }
         }
 
-
         findViewById<DrawerLayout>(R.id.drawerLayoutMain).apply {
-            closeDrawer(
-                GravityCompat.START
-            )
+            closeDrawer(GravityCompat.START)
         }
         return true
     }
@@ -189,7 +185,6 @@ class MainActivity : AppCompatActivity(),
         data: Intent?
     ) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-
             model.setIsRecognition(true)
         } else if (requestCode == REQUEST_GET_IMAGE && resultCode == Activity.RESULT_OK) {
             data?.let {
@@ -218,7 +213,6 @@ class MainActivity : AppCompatActivity(),
         if (cursor.moveToFirst()) {
             val columnIndex: Int =
                 cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-
             val filePath: String = cursor.getString(columnIndex)
             rez = Uri.parse(filePath)
         }
@@ -246,16 +240,13 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun initToggle() {
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-
         val toggle = ActionBarDrawerToggle(
             this, drawerLayoutMain, toolbar, R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
         drawerLayoutMain.addDrawerListener(toggle)
         toggle.syncState()
-
 
     }
 
@@ -276,7 +267,6 @@ class MainActivity : AppCompatActivity(),
             it.putString(EXTRA_TEXT, recognizeResultText)
 
             recognitionResultFragment.arguments = it
-
         }
 
 
@@ -334,7 +324,6 @@ class MainActivity : AppCompatActivity(),
                         REQUEST_TAKE_PHOTO
                     )
                 }
-
             }
         }
     }

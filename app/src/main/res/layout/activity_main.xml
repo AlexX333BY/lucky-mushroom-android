@@ -36,12 +36,13 @@
             android:layout_width="109dp"
             android:layout_height="11dp"
             android:id="@+id/progressBar"
-            android:scaleX="0.2" android:scaleY="0.2"/>
+            android:scaleX="0.2" android:scaleY="0.2"
+            android:visibility="invisible"/>
     <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".app.ui.MainActivity"
-            android:id="@+id/fragment_content">
+            android:id="@+id/fragment_content" android:visibility="visible">
     </android.support.constraint.ConstraintLayout>
     <android.support.design.widget.NavigationView
             android:layout_width="wrap_content"
@@ -49,9 +50,9 @@
             android:layout_height="match_parent"
             android:id="@+id/navigationView"
             android:layout_gravity="start"
-
             app:headerLayout="@layout/navigation_header"
-            tools:visibility="invisible" android:clickable="false">
+            tools:openDrawer="start"
+            android:clickable="false" android:visibility="visible">
     </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>

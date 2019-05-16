@@ -130,7 +130,6 @@ class InfoFragment : Fragment() {
                             setHasFixedSize(true)
                             layoutManager = viewManager
                             adapter = viewAdapter
-//
                         }
                 }
 

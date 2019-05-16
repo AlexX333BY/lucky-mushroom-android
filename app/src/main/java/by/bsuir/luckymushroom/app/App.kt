@@ -8,6 +8,7 @@ import by.bsuir.luckymushroom.app.services.api.recognitionRequests.AddRecognitio
 import by.bsuir.luckymushroom.app.services.api.users.LoginService
 import by.bsuir.luckymushroom.app.services.api.users.LogoutService
 import by.bsuir.luckymushroom.app.services.api.users.SignupService
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -66,6 +67,7 @@ class App : Application() {
     val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 
     override fun onCreate() {

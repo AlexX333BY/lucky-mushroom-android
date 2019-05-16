@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.content.res.AssetManager
 import android.net.Uri
+import by.bsuir.luckymushroom.app.dto.users.User
 import by.bsuir.luckymushroom.nn.common.MushroomRecognizer
 import by.bsuir.luckymushroom.nn.common.RecognitionResult
 import by.bsuir.luckymushroom.nn.impl.NeuralMushroomRecognizer
@@ -18,7 +19,6 @@ class AppViewModel : ViewModel() {
 
     var photoURI: Uri? = null
     var recognizer: MushroomRecognizer? = null
-//    var recognitionResult: Array<RecognitionResult>? = null
 
     private val isRecognition: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>().also {

@@ -5,12 +5,11 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
 
 class RecognitionFragment : Fragment() {
-
     interface OnClickListener {
         fun dispatchTakePictureIntent()
         fun pickUpFromGallery()
@@ -27,26 +26,22 @@ class RecognitionFragment : Fragment() {
             R.layout.fragment_recognition, container, false
         )
             .apply {
-                findViewById<Button>(R.id.buttonPhoto).apply {
-
+                findViewById<ImageButton>(R.id.buttonPhoto).apply {
                     setOnClickListener {
                         onClickListener.dispatchTakePictureIntent()
-
                         // TODO: debug
                         Toast.makeText(
                             activity, "Run", Toast.LENGTH_LONG
                         ).show()
                     }
-
                 }
 
-                findViewById<Button>(R.id.buttonGallery).apply {
+                findViewById<ImageButton>(R.id.buttonGallery).apply {
                     setOnClickListener {
                         onClickListener.pickUpFromGallery()
                     }
                 }
             }
     }
-
 
 }
