@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity(),
     lateinit var currentPhotoPath: String
     lateinit var recognitionFragment: RecognitionFragment
     lateinit var infoFragment: InfoFragment
-    lateinit var recognitionResultFragment: RecognitionResultFragment
     lateinit var loginFragment: LoginFragment
 
     lateinit var model: AppViewModel
@@ -68,8 +67,6 @@ class MainActivity : AppCompatActivity(),
         initToggle()
 
         model.launchRecognizerInit(assets)
-
-
 
         findViewById<NavigationView>(
             R.id.navigationView
@@ -119,7 +116,6 @@ class MainActivity : AppCompatActivity(),
 
         recognitionFragment = RecognitionFragment()
         infoFragment = InfoFragment()
-        recognitionResultFragment = RecognitionResultFragment()
         loginFragment = LoginFragment()
 
 
