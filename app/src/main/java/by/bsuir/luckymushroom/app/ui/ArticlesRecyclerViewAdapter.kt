@@ -20,7 +20,7 @@ class ArticlesRecyclerViewAdapter(private val dataset: Array<Article>) :
         viewType: Int
     ): ArticlesViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.text_view_article, parent, false)
+            .inflate(R.layout.view_article, parent, false)
 
         return ArticlesViewHolder(view)
     }
