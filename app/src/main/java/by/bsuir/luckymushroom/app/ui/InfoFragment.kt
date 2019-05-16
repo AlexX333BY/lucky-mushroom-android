@@ -30,7 +30,7 @@ class InfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        var articles: Array<Article>? = null
+        var articles: Array<Article>? = App.defaultArticles
         var location: Location?
 
         val locationManager: LocationManager =
