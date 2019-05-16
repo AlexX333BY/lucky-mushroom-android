@@ -2,6 +2,8 @@ package by.bsuir.luckymushroom.app.ui
 
 import android.Manifest
 import android.app.Activity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 import android.content.pm.PackageManager
@@ -21,13 +23,13 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
-import by.bsuir.luckymushroom.nn.common.MushroomRecognizer
-import by.bsuir.luckymushroom.nn.impl.NeuralMushroomRecognizer
+import by.bsuir.luckymushroom.app.viewmodels.AppViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -46,13 +48,13 @@ class MainActivity : AppCompatActivity(),
     }
 
     lateinit var currentPhotoPath: String
-    lateinit var photoURI: Uri
     lateinit var recognitionFragment: RecognitionFragment
     lateinit var infoFragment: InfoFragment
     lateinit var recognitionResultFragment: RecognitionResultFragment
     lateinit var loginFragment: LoginFragment
-    var mReturningWithResult: Boolean = false
-    var mFileFromGallery: Boolean = false
+
+    lateinit var model: AppViewModel
+
     var locationPermission: Boolean = false
     val isOldAndroidVersion: Boolean =
         Build.VERSION.SDK_INT <= Build.VERSION_CODES.M
@@ -62,7 +64,12 @@ class MainActivity : AppCompatActivity(),
             .replace(R.id.fragment_content, recognitionFragment)
             .commit()
 
+        drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         initToggle()
+
+        model.launchRecognizerInit(assets)
+
+
 
         findViewById<NavigationView>(
             R.id.navigationView
@@ -82,20 +89,42 @@ class MainActivity : AppCompatActivity(),
         )
 
 
+
+        model = ViewModelProviders.of(this).get(AppViewModel::class.java)
+        model.getIsLoading().observe(this, Observer {
+            it?.let {
+                if (it) {
+                    fragment_content.visibility = View.INVISIBLE
+                    progressBar.visibility = View.VISIBLE
+                } else {
+                    progressBar.visibility = ProgressBar.INVISIBLE
+                    fragment_content.visibility = View.VISIBLE
+                }
+
+            }
+        })
+        model.getIsRecognition().observe(this, Observer {
+            it?.let {
+                if (it)
+                    model.launchRecognize()
+            }
+        })
+        model.getRecognitionResult().observe(this, Observer {
+            val recognizeResultText = it?.className ?: "not-recognized"
+
+            openRecognitionResultFragment(recognizeResultText)
+        })
+
+        drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
         recognitionFragment = RecognitionFragment()
         infoFragment = InfoFragment()
         recognitionResultFragment = RecognitionResultFragment()
         loginFragment = LoginFragment()
 
-//        if (savedInstanceState == null) {
 
         supportFragmentManager.beginTransaction()
             .add(R.id.fragment_content, loginFragment).commit()
-
-//        supportFragmentManager.beginTransaction()
-//            .add(R.id.fragment_content, recognitionFragment)
-//            .commit()
-//        }
 
         initUser()
 
@@ -112,7 +141,6 @@ class MainActivity : AppCompatActivity(),
             1 -> {
                 locationPermission =
                     (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-
 
             }
         }
@@ -155,16 +183,14 @@ class MainActivity : AppCompatActivity(),
     ) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
 
-            mReturningWithResult = true
+            model.setIsRecognition(true)
         } else if (requestCode == REQUEST_GET_IMAGE && resultCode == Activity.RESULT_OK) {
             data?.let {
-                photoURI = getPath(it.data as Uri)!!
+                model.photoURI = getPath(it.data as Uri)!!
             }
-            mReturningWithResult = true
-
+            model.setIsRecognition(true)
 
         }
-
     }
 
     fun getPath(uri: Uri): Uri? {
@@ -194,14 +220,6 @@ class MainActivity : AppCompatActivity(),
 
     }
 
-    override fun onPostResume() {
-        super.onPostResume()
-        if (mReturningWithResult)
-            recognize()
-
-        mReturningWithResult = false
-    }
-
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
@@ -221,16 +239,17 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun initToggle() {
-        findViewById<DrawerLayout>(R.id.drawerLayoutMain).also {
-            val toolbar = findViewById<Toolbar>(R.id.toolbar)
 
-            val toggle = ActionBarDrawerToggle(
-                this, it, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close
-            )
-            it.addDrawerListener(toggle)
-            toggle.syncState()
-        }
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayoutMain, toolbar, R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayoutMain.addDrawerListener(toggle)
+        toggle.syncState()
+
+
     }
 
     private fun initUser() {
@@ -243,46 +262,9 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun recognize() {
-
-        val modelFile = File.createTempFile("model_with_weights", ".tmp")
-        modelFile.deleteOnExit()
-
-        FileUtils.copyInputStreamToFile(
-            assets.open("model_with_weights.pb"), modelFile
-        )
-
-        val labelsFile = File.createTempFile("labels", ".tmp")
-        labelsFile.deleteOnExit()
-
-        FileUtils.copyInputStreamToFile(assets.open("labels.txt"), labelsFile)
-
-        val recognizeResult =
-
-            try {
-                var recognizer: MushroomRecognizer?
-                recognizer = try {
-                    NeuralMushroomRecognizer(modelFile, labelsFile)
-                } catch (ex: Error) {
-                    null
-                }
-
-                recognizer?.recognize(File(photoURI.path))
-            } catch (ex: Error) {
-                null
-            } catch (ex: Exception) {
-                null
-            }
-
-//        val recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }
-
-        val recognizeResultText =
-            recognizeResult?.reduce { a, b -> if (a.probability > b.probability) a else b }
-                ?.takeIf { it.probability > 0.6 }
-                ?.className ?: "not-recognized"
-
+    private fun openRecognitionResultFragment(recognizeResultText: String) {
         Bundle().also {
-            it.putParcelable(EXTRA_IMAGE, photoURI)
+            it.putParcelable(EXTRA_IMAGE, model.photoURI)
             it.putString(EXTRA_TEXT, recognizeResultText)
 
             recognitionResultFragment.arguments = it
@@ -328,7 +310,7 @@ class MainActivity : AppCompatActivity(),
                 }
                 // Continue only if the File was successfully created
                 photoFile?.also {
-                    photoURI =
+                    model.photoURI =
                         if (!isOldAndroidVersion) FileProvider.getUriForFile(
                             this,
                             "by.bsuir.luckymushroom.fileprovider",
@@ -337,7 +319,7 @@ class MainActivity : AppCompatActivity(),
                         else Uri.fromFile(it)
                     takePictureIntent.putExtra(
                         MediaStore.EXTRA_OUTPUT,
-                        photoURI
+                        model.photoURI
                     )
                     startActivityForResult(
                         takePictureIntent,
@@ -348,6 +330,5 @@ class MainActivity : AppCompatActivity(),
             }
         }
     }
-
 
 }
