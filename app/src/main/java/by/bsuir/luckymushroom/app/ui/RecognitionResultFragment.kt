@@ -19,10 +19,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.sql.Timestamp
+import java.util.*
 
 class RecognitionResultFragment : Fragment() {
-
     val REQ_RESULTS = mapOf(
         "edible" to "съедобный", "non-edible" to "несъедобный",
         "partial-edible" to "условно-съедобный", "not-a-mushroom" to "не гриб",
@@ -46,7 +45,8 @@ class RecognitionResultFragment : Fragment() {
                     photoUri
                 )
             }
-            findViewById<TextView>(R.id.textView).text = REQ_RESULTS[recognitionResultText]
+            findViewById<TextView>(R.id.textView).text =
+                REQ_RESULTS[recognitionResultText]
             val edibleStatus: EdibleStatus? =
                 if (recognitionResultText == "not-recognized") null else EdibleStatus(
                     recognitionResultText
@@ -61,22 +61,17 @@ class RecognitionResultFragment : Fragment() {
             App.cookie?.let { cookie ->
                 photoUri?.let { photoUri ->
                     File(photoUri.path).also {
-
                         val base64Image =
                             Base64.encodeToString(
                                 it.readBytes(), Base64.DEFAULT
                             )
-
 //                            .also {
                         App.addRecognitionRequestService.addRecognitionRequest(
                             RecognitionRequest(
-                                null, Timestamp(
-                                    System.currentTimeMillis()
-
-                                ), edibleStatus, recognitionStatus,
-
+                                null,
+                                Date(System.currentTimeMillis()), edibleStatus,
+                                recognitionStatus,
                                 RequestPhoto("jpg", base64Image)
-
                             ), cookie
                         )
                             .enqueue(object : Callback<RecognitionRequest> {
@@ -94,16 +89,12 @@ class RecognitionResultFragment : Fragment() {
                                     response.body()
                                 }
 
-
                             })
-
                     }
                 }
             }
-
         }
     }
-
 
 }
 

@@ -5,30 +5,27 @@ import by.bsuir.luckymushroom.app.dto.articles.Article
 import by.bsuir.luckymushroom.app.dto.users.User
 import by.bsuir.luckymushroom.app.services.api.articles.ArticlesService
 import by.bsuir.luckymushroom.app.services.api.recognitionRequests.AddRecognitionRequestService
+import by.bsuir.luckymushroom.app.services.api.recognitionRequests.GetRecognitionRequestsService
 import by.bsuir.luckymushroom.app.services.api.users.LoginService
 import by.bsuir.luckymushroom.app.services.api.users.LogoutService
 import by.bsuir.luckymushroom.app.services.api.users.SignupService
+import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class App : Application() {
-
     companion object {
         //        val BASE_URL = "http://192.168.0.106:58479"
         val BASE_URL = "http://165.22.88.25:5000"
-
         lateinit var loginService: LoginService
         lateinit var signupService: SignupService
         lateinit var logoutService: LogoutService
-
         lateinit var articlesService: ArticlesService
-
         lateinit var addRecognitionRequestService: AddRecognitionRequestService
-
+        lateinit var getRecognitionRequestService: GetRecognitionRequestsService
         var user: User? = null
         var cookie: String? = null
-
         val defaultArticles: Array<Article> = arrayOf(
             Article(
                 "Белый гриб (Boletus edulis)", "Шляпка:\n" +
@@ -53,20 +50,27 @@ class App : Application() {
                         "Покрывало отсутствует.\n" +
                         "Споровый порошок у всех видов белого цвета.\n"
             ),
-            Article("Лисичка обыкновенная (Cantharellus cibarius)", "Лиси́чка обыкнове́нная, или Лисичка настоя́щая, или Петушóк(лат. Cantharēllus cibārius) — вид грибов семейства лисичковых.\n" +
-                    "Описание\n" +
-                    "Шляпка: \n" +
-                    "У лисички шляпка цвета яично- или оранжево-желтого (иногда выцветающего до очень светлого, почти белого); очертаниями шляпка сначала слабо-выпуклая, почти плоская, затем воронковидная, зачастую неправильной формы. Диаметр 4-6 см (до 10), сама шляпка мясистая, гладкая, с волнистым складчатым краем.\n" +
-                    "Мякоть плотная, упругая, того-же цвета, что и шляпка или светлее, со слабым фруктовым запахом и чуть островатым вкусом.\n" +
-                    "Распространение:\n" +
-                    "Этот весьма распространенный гриб растет с начала лета до поздней осени в смешанных, лиственных и хвойных лесах, временами (особенно в июле) в огромных количествах. Особенно часто встречается во мхах, в хвойных лесах.\n")
+            Article(
+                "Лисичка обыкновенная (Cantharellus cibarius)",
+                "Лиси́чка обыкнове́нная, или Лисичка настоя́щая, или Петушóк(лат. Cantharēllus cibārius) — вид грибов семейства лисичковых.\n" +
+                        "Описание\n" +
+                        "Шляпка: \n" +
+                        "У лисички шляпка цвета яично- или оранжево-желтого (иногда выцветающего до очень светлого, почти белого); очертаниями шляпка сначала слабо-выпуклая, почти плоская, затем воронковидная, зачастую неправильной формы. Диаметр 4-6 см (до 10), сама шляпка мясистая, гладкая, с волнистым складчатым краем.\n" +
+                        "Мякоть плотная, упругая, того-же цвета, что и шляпка или светлее, со слабым фруктовым запахом и чуть островатым вкусом.\n" +
+                        "Распространение:\n" +
+                        "Этот весьма распространенный гриб растет с начала лета до поздней осени в смешанных, лиственных и хвойных лесах, временами (особенно в июле) в огромных количествах. Особенно часто встречается во мхах, в хвойных лесах.\n"
+            )
         )
 
     }
 
     val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(
+            GsonConverterFactory.create(
+                GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
+            )
+        )
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 
@@ -81,7 +85,8 @@ class App : Application() {
 
         addRecognitionRequestService =
             retrofit.create(AddRecognitionRequestService::class.java)
+        getRecognitionRequestService =
+            retrofit.create(GetRecognitionRequestsService::class.java)
     }
-
 
 }

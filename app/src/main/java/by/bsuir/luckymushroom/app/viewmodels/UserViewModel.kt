@@ -46,12 +46,14 @@ class UserViewModel : ViewModel() {
                 password,
                 StandardCharsets.UTF_8
             ).toString()
-            val response =
-                App.signupService.createUser(
-                    UserCredentials(mail, passwordHash)
-                )
-                    .await()
+
             try {
+                val response =
+                    App.signupService.createUser(
+                        UserCredentials(mail, passwordHash)
+                    )
+                        .await()
+
                 if (response.isSuccessful) {
                     user.postValue(response.body())
                     App.cookie = response.headers().get("Set-Cookie") ?: ""
@@ -69,10 +71,14 @@ class UserViewModel : ViewModel() {
                 password,
                 StandardCharsets.UTF_8
             ).toString()
-            val response =
-                App.loginService.getUser(UserCredentials(mail, passwordHash))
-                    .await()
+
             try {
+                val response =
+                    App.loginService.getUser(
+                        UserCredentials(mail, passwordHash)
+                    )
+                        .await()
+
                 if (response.isSuccessful) {
                     user.postValue(response.body())
                     App.cookie = response.headers().get("Set-Cookie") ?: ""
