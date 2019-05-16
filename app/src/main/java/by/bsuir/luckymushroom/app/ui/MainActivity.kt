@@ -154,16 +154,27 @@ class MainActivity : AppCompatActivity(),
         when (item.itemId) {
             R.id.nav_info -> {
 
-                supportFragmentManager.beginTransaction().replace(
-                    R.id.fragment_content, infoFragment
-                ).addToBackStack(null).commit()
+                val frag = supportFragmentManager.findFragmentById(
+                    R.id.fragment_content
+                )
+                if (!(frag != null && frag is InfoFragment && frag.isVisible)) {
+                    supportFragmentManager.beginTransaction().replace(
+                        R.id.fragment_content, infoFragment
+                    ).addToBackStack(null).commit()
+                }
             }
 
             R.id.nav_recognition -> {
 
-                supportFragmentManager.beginTransaction().replace(
-                    R.id.fragment_content, recognitionFragment
-                ).addToBackStack(null).commit()
+                val frag = supportFragmentManager.findFragmentById(
+                    R.id.fragment_content
+                )
+                if (!(frag != null && frag is RecognitionFragment && frag.isVisible)) {
+                    supportFragmentManager.beginTransaction().replace(
+                        R.id.fragment_content, recognitionFragment
+                    ).addToBackStack(null).commit()
+                }
+
             }
         }
 
@@ -263,6 +274,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun openRecognitionResultFragment(recognizeResultText: String) {
+        val recognitionResultFragment = RecognitionResultFragment()
         Bundle().also {
             it.putParcelable(EXTRA_IMAGE, model.photoURI)
             it.putString(EXTRA_TEXT, recognizeResultText)
