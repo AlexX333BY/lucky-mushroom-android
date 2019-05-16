@@ -1,4 +1,4 @@
-package by.bsuir.luckymushroom.app.ui
+package by.bsuir.luckymushroom.app.ui.fragments
 
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +15,7 @@ import by.bsuir.luckymushroom.app.dto.recognitionRequests.EdibleStatus
 import by.bsuir.luckymushroom.app.dto.recognitionRequests.RecognitionRequest
 import by.bsuir.luckymushroom.app.dto.recognitionRequests.RecognitionStatus
 import by.bsuir.luckymushroom.app.dto.recognitionRequests.RequestPhoto
+import by.bsuir.luckymushroom.app.ui.activities.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,9 +37,11 @@ class RecognitionResultFragment : Fragment() {
             R.layout.fragment_recognition_result, container, false
         ).apply {
             val photoUri: Uri? =
-                arguments?.getParcelable(MainActivity.EXTRA_IMAGE)
+                arguments?.getParcelable(
+                    MainActivity.EXTRA_IMAGE)
             val recognitionResultText: String =
-                arguments!!.getString(MainActivity.EXTRA_TEXT)
+                arguments!!.getString(
+                    MainActivity.EXTRA_TEXT)
             val imageView = findViewById<ImageView>(R.id.imageView).apply {
                 setImageBitmap(null)
                 setImageURI(

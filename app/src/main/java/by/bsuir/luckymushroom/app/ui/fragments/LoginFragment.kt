@@ -1,4 +1,4 @@
-package by.bsuir.luckymushroom.app.ui
+package by.bsuir.luckymushroom.app.ui.fragments
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders

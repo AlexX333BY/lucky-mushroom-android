@@ -1,4 +1,4 @@
-package by.bsuir.luckymushroom.app.ui
+package by.bsuir.luckymushroom.app.ui.fragments
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -15,6 +15,8 @@ import android.view.ViewGroup
 import by.bsuir.luckymushroom.R
 import by.bsuir.luckymushroom.app.App
 import by.bsuir.luckymushroom.app.dto.articles.Article
+import by.bsuir.luckymushroom.app.ui.adapters.ArticlesRecyclerViewAdapter
+import by.bsuir.luckymushroom.app.ui.activities.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -124,7 +126,10 @@ class InfoFragment : Fragment() {
             .apply {
                 articles?.let {
                     viewManager = LinearLayoutManager(activity)
-                    viewAdapter = ArticlesRecyclerViewAdapter(it)
+                    viewAdapter =
+                        ArticlesRecyclerViewAdapter(
+                            it
+                        )
                     recyclerView =
                         findViewById<RecyclerView>(R.id.recyclerview).apply {
                             setHasFixedSize(true)

@@ -6,7 +6,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".app.ui.RecognitionResultFragment"
+        tools:context=".app.ui.fragments.RecognitionResultFragment"
         android:id="@+id/recognition_result_fragment">
 
     <ImageView

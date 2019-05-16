@@ -1,4 +1,4 @@
-package by.bsuir.luckymushroom.app.ui
+package by.bsuir.luckymushroom.app.ui.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment

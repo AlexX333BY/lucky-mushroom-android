@@ -1,4 +1,4 @@
-package by.bsuir.luckymushroom.app.ui
+package by.bsuir.luckymushroom.app.ui.activities
 
 import android.Manifest
 import android.app.Activity
@@ -27,6 +27,10 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
+import by.bsuir.luckymushroom.app.ui.fragments.InfoFragment
+import by.bsuir.luckymushroom.app.ui.fragments.LoginFragment
+import by.bsuir.luckymushroom.app.ui.fragments.RecognitionFragment
+import by.bsuir.luckymushroom.app.ui.fragments.RecognitionResultFragment
 import by.bsuir.luckymushroom.app.viewmodels.AppViewModel
 import by.bsuir.luckymushroom.app.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -117,9 +121,12 @@ class MainActivity : AppCompatActivity(),
         })
 
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_content, LoginFragment()).commit()
+            .add(R.id.fragment_content,
+                LoginFragment()
+            ).commit()
 
-        recognitionFragment = RecognitionFragment()
+        recognitionFragment =
+            RecognitionFragment()
         infoFragment = InfoFragment()
         loginFragment = LoginFragment()
 
@@ -206,7 +213,9 @@ class MainActivity : AppCompatActivity(),
     private fun openLoginFragment() {
         drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_content, LoginFragment()).commit()
+            .replace(R.id.fragment_content,
+                LoginFragment()
+            ).commit()
     }
 
     fun getPath(uri: Uri): Uri? {
@@ -266,10 +275,13 @@ class MainActivity : AppCompatActivity(),
 
     //
     private fun openRecognitionResultFragment(recognizeResultText: String) {
-        val recognitionResultFragment = RecognitionResultFragment()
+        val recognitionResultFragment =
+            RecognitionResultFragment()
         Bundle().also {
-            it.putParcelable(EXTRA_IMAGE, model.photoURI)
-            it.putString(EXTRA_TEXT, recognizeResultText)
+            it.putParcelable(
+                EXTRA_IMAGE, model.photoURI)
+            it.putString(
+                EXTRA_TEXT, recognizeResultText)
 
             recognitionResultFragment.arguments = it
         }

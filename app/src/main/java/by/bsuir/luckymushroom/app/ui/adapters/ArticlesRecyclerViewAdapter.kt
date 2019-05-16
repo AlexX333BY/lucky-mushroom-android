@@ -1,4 +1,4 @@
-package by.bsuir.luckymushroom.app.ui
+package by.bsuir.luckymushroom.app.ui.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -22,7 +22,9 @@ class ArticlesRecyclerViewAdapter(private val dataset: Array<Article>) :
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.view_article, parent, false)
 
-        return ArticlesViewHolder(view)
+        return ArticlesViewHolder(
+            view
+        )
     }
 
     override fun onBindViewHolder(holder: ArticlesViewHolder, position: Int) {
