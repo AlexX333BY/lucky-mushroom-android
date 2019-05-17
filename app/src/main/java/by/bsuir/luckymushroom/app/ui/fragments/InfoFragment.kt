@@ -33,7 +33,7 @@ class InfoFragment : Fragment() {
     ): View? {
 
         var articles: Array<Article>? = App.defaultArticles
-        var location: Location?
+        val location: Location?
 
         val locationManager: LocationManager =
             activity?.getSystemService(
@@ -131,7 +131,7 @@ class InfoFragment : Fragment() {
                             it
                         )
                     recyclerView =
-                        findViewById<RecyclerView>(R.id.recyclerview).apply {
+                        findViewById<RecyclerView>(R.id.recyclerview_info).apply {
                             setHasFixedSize(true)
                             layoutManager = viewManager
                             adapter = viewAdapter

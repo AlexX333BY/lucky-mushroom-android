@@ -16,7 +16,7 @@ class AppViewModel : ViewModel() {
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
     var photoURI: Uri? = null
-    var recognizer: MushroomRecognizer? = null
+    private var recognizer: MushroomRecognizer? = null
     private val isRecognition: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>().also {
             it.value = false
@@ -43,6 +43,10 @@ class AppViewModel : ViewModel() {
 
     fun getIsLoading(): LiveData<Boolean> {
         return isLoading
+    }
+
+    fun setIsLoading(value: Boolean) {
+        isLoading.postValue(value)
     }
 
     override fun onCleared() {

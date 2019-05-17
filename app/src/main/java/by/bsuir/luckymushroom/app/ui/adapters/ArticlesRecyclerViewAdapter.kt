@@ -12,9 +12,6 @@ class ArticlesRecyclerViewAdapter(private val dataset: Array<Article>) :
     RecyclerView.Adapter<ArticlesRecyclerViewAdapter.ArticlesViewHolder>() {
     class ArticlesViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
-    lateinit var articleTitle: TextView
-    lateinit var articleText: TextView
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -22,20 +19,16 @@ class ArticlesRecyclerViewAdapter(private val dataset: Array<Article>) :
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.view_article, parent, false)
 
-        return ArticlesViewHolder(
-            view
-        )
+        return ArticlesViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ArticlesViewHolder, position: Int) {
-
         holder.view.findViewById<TextView>(R.id.articleTitle).apply {
             text = dataset[position].articleTitle
         }
         holder.view.findViewById<TextView>(R.id.articleText).apply {
             text = dataset[position].articleText
         }
-
 
     }
 

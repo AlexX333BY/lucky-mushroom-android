@@ -28,6 +28,11 @@ class UserViewModel : ViewModel() {
         return user
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
+
     fun launchSignUp(mail: String, password: String) {
         uiScope.launch {
             signUp(mail, password)
@@ -46,7 +51,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    suspend fun logOut() = withContext(Dispatchers.IO) {
+    private suspend fun logOut() = withContext(Dispatchers.IO) {
         try {
             App.cookie?.let {
                 App.logoutService.logout(it).await()
@@ -58,7 +63,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    suspend fun signUp(mail: String, password: String) =
+    private suspend fun signUp(mail: String, password: String) =
         withContext(Dispatchers.IO) {
             val passwordHash = Hashing.sha512().hashString(
                 password,
@@ -82,7 +87,7 @@ class UserViewModel : ViewModel() {
             }
         }
 
-    suspend fun logIn(mail: String, password: String) =
+    private suspend fun logIn(mail: String, password: String) =
         withContext(Dispatchers.IO) {
             val passwordHash = Hashing.sha512().hashString(
                 password,

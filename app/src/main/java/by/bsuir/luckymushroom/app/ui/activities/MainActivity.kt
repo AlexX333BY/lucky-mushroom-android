@@ -22,15 +22,13 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import by.bsuir.luckymushroom.R
-import by.bsuir.luckymushroom.app.ui.fragments.InfoFragment
-import by.bsuir.luckymushroom.app.ui.fragments.LoginFragment
-import by.bsuir.luckymushroom.app.ui.fragments.RecognitionFragment
-import by.bsuir.luckymushroom.app.ui.fragments.RecognitionResultFragment
+import by.bsuir.luckymushroom.app.ui.fragments.*
 import by.bsuir.luckymushroom.app.viewmodels.AppViewModel
 import by.bsuir.luckymushroom.app.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -111,17 +109,26 @@ class MainActivity : AppCompatActivity(),
         })
 
         userModel.getUser().observe(this, Observer {
-            if (it == null)
+            val logoutItem = navigationView.menu.findItem(R.id.nav_logout)
+            val historyItem = navigationView.menu.findItem(R.id.nav_history)
+            if (it == null) {
+                logoutItem.isVisible = false
+                historyItem.isVisible = false
                 openLoginFragment()
-            else
+
+            } else {
+                logoutItem.isVisible = true
+                historyItem.isVisible = true
                 runMain()
+            }
 
             textViewUserName.text =
                 it?.userCredentials?.userMail ?: "Mushroomer"
         })
 
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_content,
+            .add(
+                R.id.fragment_content,
                 LoginFragment()
             ).commit()
 
@@ -150,16 +157,11 @@ class MainActivity : AppCompatActivity(),
             1 -> {
                 locationPermission =
                     (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-
             }
         }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // TODO: debug
-        Toast.makeText(this, item.title.toString(), Toast.LENGTH_LONG)
-            .show()
-
         when (item.itemId) {
             R.id.nav_info -> {
                 val frag = supportFragmentManager.findFragmentById(
@@ -182,6 +184,14 @@ class MainActivity : AppCompatActivity(),
                 }
             }
             R.id.nav_history -> {
+                val frag = supportFragmentManager.findFragmentById(
+                    R.id.fragment_content
+                )
+                if (!(frag != null && frag is HistoryFragment && frag.isVisible)) {
+                    supportFragmentManager.beginTransaction().replace(
+                        R.id.fragment_content, HistoryFragment()
+                    ).addToBackStack(null).commit()
+                }
             }
             R.id.nav_logout -> {
                 userModel.launchLogOut()
@@ -213,7 +223,8 @@ class MainActivity : AppCompatActivity(),
     private fun openLoginFragment() {
         drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_content,
+            .replace(
+                R.id.fragment_content,
                 LoginFragment()
             ).commit()
     }
@@ -241,22 +252,19 @@ class MainActivity : AppCompatActivity(),
         }
         cursor.close()
         return rez
-
     }
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
-        // Create an image file name
         val timeStamp: String =
             SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File =
             getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
         ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
 
@@ -273,19 +281,19 @@ class MainActivity : AppCompatActivity(),
 
     }
 
-    //
     private fun openRecognitionResultFragment(recognizeResultText: String) {
         val recognitionResultFragment =
             RecognitionResultFragment()
         Bundle().also {
             it.putParcelable(
-                EXTRA_IMAGE, model.photoURI)
+                EXTRA_IMAGE, model.photoURI
+            )
             it.putString(
-                EXTRA_TEXT, recognizeResultText)
+                EXTRA_TEXT, recognizeResultText
+            )
 
             recognitionResultFragment.arguments = it
         }
-
 
         supportFragmentManager.beginTransaction()
             .replace(
@@ -307,14 +315,11 @@ class MainActivity : AppCompatActivity(),
 
     override fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            // Ensure that there's a camera activity to handle the intent
-            takePictureIntent.addFlags(FLAG_GRANT_WRITE_URI_PERMISSION);
+            takePictureIntent.addFlags(FLAG_GRANT_WRITE_URI_PERMISSION)
             takePictureIntent.resolveActivity(packageManager)?.also {
-                // Create the File where the photo should go
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
-                    // Error occurred while creating the File
                     val toast = Toast.makeText(
                         this,
                         "Уважаемый, ошибка ${ex.message}",
@@ -323,7 +328,6 @@ class MainActivity : AppCompatActivity(),
                     toast.show()
                     null
                 }
-                // Continue only if the File was successfully created
                 photoFile?.also {
                     model.photoURI =
                         if (!isOldAndroidVersion) FileProvider.getUriForFile(
@@ -344,5 +348,4 @@ class MainActivity : AppCompatActivity(),
             }
         }
     }
-
 }
