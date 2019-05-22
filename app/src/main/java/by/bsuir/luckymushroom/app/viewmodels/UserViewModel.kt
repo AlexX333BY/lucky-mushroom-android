@@ -28,6 +28,10 @@ class UserViewModel : ViewModel() {
         return user
     }
 
+    fun clearAuthError() {
+        authError.postValue("")
+    }
+
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()

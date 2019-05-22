@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.Toast
 import by.bsuir.luckymushroom.R
 
 class RecognitionFragment : Fragment() {
@@ -15,7 +14,7 @@ class RecognitionFragment : Fragment() {
         fun pickUpFromGallery()
     }
 
-    lateinit var onClickListener: OnClickListener
+    private lateinit var onClickListener: OnClickListener
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,10 +28,6 @@ class RecognitionFragment : Fragment() {
                 findViewById<ImageButton>(R.id.buttonPhoto).apply {
                     setOnClickListener {
                         onClickListener.dispatchTakePictureIntent()
-                        // TODO: debug
-                        Toast.makeText(
-                            activity, "Run", Toast.LENGTH_LONG
-                        ).show()
                     }
                 }
 

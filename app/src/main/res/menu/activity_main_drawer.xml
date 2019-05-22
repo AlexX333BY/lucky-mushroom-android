@@ -9,9 +9,11 @@
               android:id="@+id/nav_info"/>
         <item android:title="@string/history"
               android:icon="@drawable/ic_history_black_24dp"
-              android:id="@+id/nav_history"/>
+              android:id="@+id/nav_history" android:visible="false"/>
         <item android:title="@string/log_out"
               android:icon="@drawable/ic_exit_to_app_black_24dp"
-              android:id="@+id/nav_logout"/>
+              android:id="@+id/nav_logout" android:visible="false"/>
+        <item android:title="@string/log_in" android:id="@+id/nav_login"
+              android:icon="@drawable/ic_person_black_24dp"/>
     </group>
 </menu>

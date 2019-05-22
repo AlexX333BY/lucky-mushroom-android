@@ -39,10 +39,11 @@ class LoginFragment : Fragment() {
             .apply {
                 activity?.let {
                     userModel.getAuthError().observe(it, Observer { authError ->
-                        Toast.makeText(
-                            it, authError,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        if (!authError.isNullOrEmpty())
+                            Toast.makeText(
+                                it, authError,
+                                Toast.LENGTH_LONG
+                            ).show()
                     })
                 }
                 val editTextPassword =

@@ -22,7 +22,6 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
@@ -49,26 +48,14 @@ class MainActivity : AppCompatActivity(),
         val EXTRA_TEXT = "Text"
     }
 
-    lateinit var currentPhotoPath: String
-    lateinit var recognitionFragment: RecognitionFragment
-    lateinit var infoFragment: InfoFragment
-    lateinit var loginFragment: LoginFragment
-    lateinit var model: AppViewModel
-    lateinit var userModel: UserViewModel
+    private lateinit var currentPhotoPath: String
+    private lateinit var recognitionFragment: RecognitionFragment
+    private lateinit var infoFragment: InfoFragment
+    private lateinit var model: AppViewModel
+    private lateinit var userModel: UserViewModel
     var locationPermission: Boolean = false
-    val isOldAndroidVersion: Boolean =
+    private val isOldAndroidVersion: Boolean =
         Build.VERSION.SDK_INT <= Build.VERSION_CODES.M
-
-    override fun runMain() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_content, recognitionFragment)
-            .commit()
-
-        drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-
-        model.launchRecognizerInit(assets)
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +68,9 @@ class MainActivity : AppCompatActivity(),
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ), 1
         )
+        val logoutItem = navigationView.menu.findItem(R.id.nav_logout)
+        val historyItem = navigationView.menu.findItem(R.id.nav_history)
+        val loginItem = navigationView.menu.findItem(R.id.nav_login)
 
         model = ViewModelProviders.of(this).get(AppViewModel::class.java)
         userModel = ViewModelProviders.of(this).get(UserViewModel::class.java)
@@ -109,16 +99,16 @@ class MainActivity : AppCompatActivity(),
         })
 
         userModel.getUser().observe(this, Observer {
-            val logoutItem = navigationView.menu.findItem(R.id.nav_logout)
-            val historyItem = navigationView.menu.findItem(R.id.nav_history)
             if (it == null) {
                 logoutItem.isVisible = false
                 historyItem.isVisible = false
+                loginItem.isVisible = true
                 openLoginFragment()
 
             } else {
                 logoutItem.isVisible = true
                 historyItem.isVisible = true
+                loginItem.isVisible = false
                 runMain()
             }
 
@@ -126,16 +116,15 @@ class MainActivity : AppCompatActivity(),
                 it?.userCredentials?.userMail ?: "Mushroomer"
         })
 
+        recognitionFragment = RecognitionFragment()
+        infoFragment = InfoFragment()
+
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.fragment_content,
                 LoginFragment()
             ).commit()
 
-        recognitionFragment =
-            RecognitionFragment()
-        infoFragment = InfoFragment()
-        loginFragment = LoginFragment()
 
 
         initToggle()
@@ -147,6 +136,16 @@ class MainActivity : AppCompatActivity(),
         openLoginFragment()
     }
 
+    override fun runMain() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_content, recognitionFragment)
+            .commit()
+
+        drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+
+        model.launchRecognizerInit(assets)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -156,7 +155,7 @@ class MainActivity : AppCompatActivity(),
         when (requestCode) {
             1 -> {
                 locationPermission =
-                    (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             }
         }
     }
@@ -196,6 +195,9 @@ class MainActivity : AppCompatActivity(),
             R.id.nav_logout -> {
                 userModel.launchLogOut()
             }
+            R.id.nav_login -> {
+                openLoginFragment()
+            }
         }
 
         findViewById<DrawerLayout>(R.id.drawerLayoutMain).apply {
@@ -222,6 +224,7 @@ class MainActivity : AppCompatActivity(),
 
     private fun openLoginFragment() {
         drawerLayoutMain.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        userModel.clearAuthError()
         supportFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_content,
@@ -229,7 +232,7 @@ class MainActivity : AppCompatActivity(),
             ).commit()
     }
 
-    fun getPath(uri: Uri): Uri? {
+    private fun getPath(uri: Uri): Uri? {
         val projection: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
         val cursor: Cursor = if (!isOldAndroidVersion) {
             val fileId = DocumentsContract.getDocumentId(uri)
@@ -278,7 +281,6 @@ class MainActivity : AppCompatActivity(),
         )
         drawerLayoutMain.addDrawerListener(toggle)
         toggle.syncState()
-
     }
 
     private fun openRecognitionResultFragment(recognizeResultText: String) {
@@ -294,18 +296,16 @@ class MainActivity : AppCompatActivity(),
 
             recognitionResultFragment.arguments = it
         }
-
         supportFragmentManager.beginTransaction()
             .replace(
                 R.id.fragment_content, recognitionResultFragment
             ).addToBackStack(null).commit()
-
     }
 
     override fun pickUpFromGallery() {
         Intent(Intent.ACTION_GET_CONTENT).also { getPictureIntent ->
             getPictureIntent.addCategory(Intent.CATEGORY_OPENABLE)
-            getPictureIntent.setType("image/*")
+            getPictureIntent.type = "image/*"
             startActivityForResult(
                 Intent.createChooser(getPictureIntent, "Select Picture"),
                 REQUEST_GET_IMAGE

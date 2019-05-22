@@ -24,7 +24,6 @@ class App : Application() {
         lateinit var articlesService: ArticlesService
         lateinit var addRecognitionRequestService: AddRecognitionRequestService
         lateinit var getRecognitionRequestService: GetRecognitionRequestsService
-        var user: User? = null
         var cookie: String? = null
         val defaultArticles: Array<Article> = arrayOf(
             Article(
@@ -64,7 +63,7 @@ class App : Application() {
 
     }
 
-    val retrofit: Retrofit = Retrofit.Builder()
+    private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(
             GsonConverterFactory.create(
